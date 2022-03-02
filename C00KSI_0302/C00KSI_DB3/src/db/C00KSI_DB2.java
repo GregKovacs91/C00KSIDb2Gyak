@@ -168,7 +168,22 @@ public class C00KSI_DB2 {
 		}
 	}
 
-	
+	public void DinamikusAdattorles() {
+		System.out.println("Törlendő autó: ");
+		String rsz = sc.next();
+		String sqlp = "delete from " + user + ".AUTO" + "where rsz=?";
+		if (conn !=null) {
+			try {
+				ps = conn.prepareStatement(sqlp);
+				ps.setString(1, rsz);
+				ps.executeUpdate();
+				ps.close();
+				System.out.println(rsz + "rendszamu auto torolve\n");
+			}catch(Exception ex) {
+				System.err.println(ex.getMessage());
+			}
+		}
+	}
 
 	
 	
@@ -306,7 +321,53 @@ public class C00KSI_DB2 {
 			}
 		}
 	}
-
+	
+	
+	public void DinamikusTablaTorles() {
+		String sqlp = "create or replace procedure tablatorles(nev IN char) is" +
+						"begin" +
+						"execute immediate 'drop table ' || nev;" +
+						"end;";
+		System.out.println("Törlendő tábla: ");
+		String name = sc.next().trim();
+		if (conn != null) {
+			try {
+				s = conn.createStatement();
+				s.executeUpdate(sqlp);
+				cs = conn.prepareCall("{call tablatorles(?)");
+				cs.setString(1, name);
+				cs.execute();
+				System.out.println(" tábla törlve\n");
+			} catch(Exception ex) {
+				System.err.println(ex.getMessage());
+			}
+		}
+	}
+	
+	public void DinamikusModositas() {
+		if (conn != null) {
+			String sqlp = "update auto1 set ar=ar-?";
+			System.out.println("Mennyivel csökkentsük az árat?");
+			int arcsokk= sc.nextInt();
+			try {
+				conn.setAutoCommit(false);
+				try {
+					ps = conn.prepareStatement(sqlp);
+					ps.setInt(1, arcsokk);
+					ps.executeUpdate();
+					conn.commit();
+					System.out.println("Módosítás megtörtént\n");
+				}catch(Exception e) {
+					System.err.println(e.getMessage());
+					conn.rollback();
+					System.out.println("Módosítás visszavonva\n");
+				}
+				conn.setAutoCommit(true);
+			}catch(Exception ex) {
+				System.err.println(ex.getMessage());
+			}
+		}
+	}
 
 
 	
