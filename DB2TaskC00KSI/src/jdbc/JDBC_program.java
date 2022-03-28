@@ -71,19 +71,7 @@ public class JDBC_program {
 		}
 	}
 	
-	/*public static void StatikusTablaModosiTas() {
-		if(conn != null) {}
-		try {
-			String sqlp="alter table auto add(tulaj_id references tulaj)";
-			s=conn.createStatement();
-			s.executeUpdate(sqlp);
-			System.out.println("Autó tábla módosítva!\n");
-			s.close();
-		}catch(Exception ex) {
-			System.err.println(ex.getMessage());
-		}
-	}
-	*/
+
 	public static void StatikusTablaTorles() {
 		if(conn != null) {}
 		try {
@@ -105,7 +93,7 @@ public class JDBC_program {
 	
 	public static void StatikusAdatfelvetel_1() {
 		if(conn != null) {
-			//String sqlp_tul="insert into tulaj values (1, 'Tóth Máté', " + "'Miskolc', to_date('1980.05.12', 'yyyy.mm.dd'))";
+		
 			String sqlp[]= {
 					"insert into palyak values(1,'Bahrain International Circuit, Sakhir','Bahrein',to_date('2022.03.20', 'yyyy.mm.dd'))",
 					"insert into palyak values(2,'Saudi Arabia Jeddah Corniche Circuit, Jeddah','Szaúd-arábia',to_date('2022.03.27', 'yyyy.mm.dd'))",
@@ -133,16 +121,6 @@ public class JDBC_program {
 
 
 			};
-			
-			/*try {
-				s=conn.createStatement();
-				s.executeUpdate(sqlp);
-				System.out.println("Tulaj felvéve\n");
-				s.close();
-			}catch(Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-			*/
 			for(int i = 0;i < sqlp.length; i++) {
 				try {
 					s=conn.createStatement();
@@ -158,7 +136,6 @@ public class JDBC_program {
 	
 	public static void StatikusAdatfelvetel_3() {
 		if(conn != null) {
-		//	String sqlp_tul="insert into tulaj values (1, 'Tóth Máté', " + "'Miskolc', to_date('1980.05.12', 'yyyy.mm.dd'))";
 			String sqlp[]= {
 					"insert into csapat values('Mercedes',251,124,265)",
 			"insert into csapat values('Red Bull',328,76,207)",
@@ -189,7 +166,7 @@ public class JDBC_program {
 	
 	public static void StatikusAdatfelvetel_2() {
 		if(conn != null) {
-			//String sqlp_tul="insert into tulaj values (1, 'Tóth Máté', " + "'Miskolc', to_date('1980.05.12', 'yyyy.mm.dd'))";
+		
 			String sqlp[]= {
 					"insert into versenyzok values(44,'Lewis Hamilton','Mercedes',290,103,to_date('2007.03.18', 'yyyy.mm.dd'))",
 			"insert into versenyzok values(63,' George Russell','Mercedes',62,0,to_date('2019.03.17', 'yyyy.mm.dd'))",
@@ -266,17 +243,17 @@ public class JDBC_program {
 	}
 
 	public void DinamikusAdattorles() {
-		System.out.println("Törlendö auto: ");
-		String rsz = sc.next();
-		//String user = null;
-		String sqlp = "delete from " +user+ ".AUTO" + "where rsz=?";
+		System.out.println("Törlendő pilóta?: ");
+		String rajtszam = sc.next();
+		String user = null;
+		String sqlp = "delete from " +user+ ".PILOTA" + "where rajtszam=?";
 		if (conn != null) {
 			try {
 				ps = conn.prepareStatement(sqlp);
-				ps.setString(1, rsz);
+				ps.setString(1, rajtszam);
 				ps.executeUpdate();
 				ps.close();
-				System.out.println(rsz + " rendszamú autó törölve\n");
+				System.out.println(rajtszam + " rajtszámú pilóta törölve\n");
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
 			}
@@ -326,16 +303,16 @@ public class JDBC_program {
 	}
 	
 	public void ModosithatoKurzor() {
-		System.out.println("Szin: ");
-		String szin = sc.next().trim();
-		String sqlp = "select ar from auto where szin = '"+ szin +"'";
+		System.out.println("Csapat név megadása: ");
+		String csapat = sc.next().trim();
+		String sqlp = "select futamokszama from csapat where csapat = '"+ csapat +"'";
 		if (conn != null) {
 			try {
 				s = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 				rs = s.executeQuery(sqlp);
 				while (rs.next()) {
-					int regiar = rs.getInt("ar");
-					rs.updateInt("ar", (regiar*2));
+					int regifutamokszama = rs.getInt("Futamok száma");
+					rs.updateInt("új futamok száma:", (regifutamokszama*2));
 					rs.updateRow();
 				}
 			} catch (Exception ex) {
