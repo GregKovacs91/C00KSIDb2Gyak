@@ -31,7 +31,9 @@ public class JDBC_program {
 		//StatikusAdatfelvetel_1();
 		//StatikusAdatfelvetel_2();
 		//StatikusAdatfelvetel_3();
-		DinamikusAdatfelvetel();
+		//DinamikusAdatfelvetel();
+		StatikusLekerdezes();
+		//DinamikusAdattorles();
 		//StatikusTablaTorles();
 		//Lekapcs();
 	}
@@ -210,7 +212,7 @@ public class JDBC_program {
 	
 	public static void DinamikusAdatfelvetel() {
 		if(conn != null) {
-			String sqlp="insert into versenyzok(rajtszam, nev, csapat, futamok, gyozelmek, debutalas)" + "values(?,?,?,?,?,?)";
+		//	String sqlp="insert into versenyzok(rajtszam, nev, csapat, futamok, gyozelmek, debutalas)" + "values(?,?,?,?,?,?)";
 			
 			System.out.println("Kérem a versenyző rajtszámát: ");
 			int rajtszam = sc.nextInt();
@@ -226,7 +228,7 @@ public class JDBC_program {
 			String debutalas = sc.next().trim();
 			
 			try {
-				ps=conn.prepareStatement(sqlp);
+			//	ps=conn.prepareStatement(sqlp);
 				ps.setInt(1, rajtszam);
 				ps.setString(2, nev);
 				ps.setString(3, csapat);	
@@ -242,11 +244,11 @@ public class JDBC_program {
 		}
 	}
 
-	public void DinamikusAdattorles() {
+	public static void DinamikusAdattorles() {
 		System.out.println("Törlendő pilóta?: ");
 		String rajtszam = sc.next();
 		String user = null;
-		String sqlp = "delete from " +user+ ".PILOTA" + "where rajtszam=?";
+		String sqlp = "delete from versenyzok where rajtszam=?";
 		if (conn != null) {
 			try {
 				ps = conn.prepareStatement(sqlp);
@@ -277,23 +279,23 @@ public class JDBC_program {
 	
 	}
 	
-	public void StatikusLekerdezes() {
+	public static void StatikusLekerdezes() {
 		if (conn != null) {
-			String sqlp = "select * from versenyzok";
-			System.out.println("RajtSzam   Nev    Csapat    Futamok    Gyozelem     Debutalas");
+			String sqlp1 = "select rajtszam from versenyzok";
+			System.out.println("Rajtszam   Nev    Csapat    Futamok    Gyozelem     Debutalas");
 			System.out.println("-----------------------------------------------------");
 			try {
-				s = conn.createStatement();
-				s.executeQuery(sqlp);
+			//	s = conn.createStatement();
+				s.executeQuery(sqlp1);
 				rs = s.getResultSet();
 				while(rs.next()) {
-					String rsz = rs.getString("rsz");
-					String tipus = rs.getString("tipus");
-					String szin = rs.getString("szin");
-					int evjarat = rs.getInt("evjarat");
-					int ar = rs.getInt("ar");
-					int tulaj_id = rs.getInt("Tulaj_id");
-					System.out.println(rsz+"\t\t"+tipus+"\t"+szin+"\t"+evjarat+"\t"+ar+"t"+tulaj_id);
+					int rajtszam = rs.getInt("Rajtszam");
+					String nev = rs.getString("Nev");
+					String csapat = rs.getString("Csapat");
+					int futamok = rs.getInt("Futamok");
+					int gyozelem = rs.getInt("Gyozelem");
+					String debutalas = rs.getString("Debutalas");
+					System.out.println(rajtszam+"\t\t"+nev+"\t"+csapat+"\t"+futamok+"\t"+gyozelem+"t"+debutalas);
 				}
 				rs.close();
 			}catch(Exception ex) {
@@ -321,129 +323,6 @@ public class JDBC_program {
 		}
 	}
 	
-	public void InEljarasHivas() {
-		if (conn != null) {
-			try {
-				String sqlp = "Create or replace procedure arcsokkentes" +
-								"(kor IN number) is " +
-								"begin " + 
-								"update auto set ar=ar0.9 where" +
-								"to_char(sysdate, 'yyyy')-evjarat > kor; " +
-								"end;";
-				System.out.println("Kor: ");
-				int kor = sc.nextInt();
-				s = conn.createStatement();
-				s.executeUpdate(sqlp);
-				System.out.println("Fuggveny Letrejott\n");
-				cs = conn.prepareCall("{call arcsokkent(?)}");
-				cs.setInt (1, kor);
-				cs.execute();
-			}catch (Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-		}
-	}
-	
-	public void OutEljarasHivas() {
-		if (conn != null) {
-			try {
-				String sqlp = "create or replace procedure atlagar" +
-								"(sz IN char, atl OUT number) is" +
-								"begin "+
-								"select avg(ar) into all from auto where szin=sz; " +
-								"end;";
-				System.out.println("Szin: ");
-				String szin = sc.next();
-				s = conn.createStatement();
-				s.executeUpdate(sqlp);
-				System.out.println("Eljaras letrejött \n");
-				cs = conn.prepareCall("{call atlagfv(?)}");
-				cs.setString(1, szin);
-				cs = registerOutParameter(1, java.sql.Types.FLOAT);
-				cs.execute();
-				float atlag = cs.getFloat(2);
-				System.out.println(szin + "autok atlagara: " + atlag + "\n");
-				
-			}catch(Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-		}
-	}
-
-
-	public void FuggvenyHivas() {
-		if (conn != null) {
-			try {
-				String sqlp = "create or replace function atlagarfv" +
-								"(sz IN char) return number is" +
-								"atl number (10,2);" +
-								"begin "+
-								"select avg(ar) into all from auto where szin=sz; " +
-								"end;";
-				System.out.println("Szin: ");
-				String szin = sc.next();
-				s = conn.createStatement();
-				s.executeUpdate(sqlp);
-				System.out.println("Fuggveny letrejött \n");
-				cs = conn.prepareCall("{? = call atlagfv(?)}");
-				cs = registerOutParameter(1, java.sql.Types.FLOAT);
-				cs.setString(2, szin);
-				cs.execute();
-				float atlag = cs.getFloat(1);
-				System.out.println(szin + "autok atlagara: " + atlag + "\n");
-				
-			}catch(Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-		}
-	}
-	
-	
-	public void DinamikusTablaTorles() {
-		String sqlp = "create or replace procedure tablatorles(nev IN char) is" +
-						"begin" +
-						"execute immediate 'drop table ' || nev;" +
-						"end;";
-		System.out.println("Törlendő tábla: ");
-		String name = sc.next().trim();
-		if (conn != null) {
-			try {
-				s = conn.createStatement();
-				s.executeUpdate(sqlp);
-				cs = conn.prepareCall("{call tablatorles(?)");
-				cs.setString(1, name);
-				cs.execute();
-				System.out.println(" tábla törlve\n");
-			} catch(Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-		}
-	}
-	
-	public void DinamikusModositas() {
-		if (conn != null) {
-			String sqlp = "update auto1 set ar=ar-?";
-			System.out.println("Mennyivel csökkentsük az árat?");
-			int arcsokk= sc.nextInt();
-			try {
-				conn.setAutoCommit(false);
-				try {
-					ps = conn.prepareStatement(sqlp);
-					ps.setInt(1, arcsokk);
-					ps.executeUpdate();
-					conn.commit();
-					System.out.println("Módosítás megtörtént\n");
-				}catch(Exception e) {
-					System.err.println(e.getMessage());
-					conn.rollback();
-					System.out.println("Módosítás visszavonva\n");
-				}
-				conn.setAutoCommit(true);
-			}catch(Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-		}
-	}
 
 	public static void Lekapcs() {
 	if (conn != null) {
