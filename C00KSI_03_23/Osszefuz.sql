@@ -1,4 +1,4 @@
 SELECT 
-  CONCAT('let''s',' try this') 
+  CONCAT('Kovács',' Sándor Gergő') 
 FROM
   dual;
