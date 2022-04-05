@@ -26,19 +26,21 @@ public class JDBC_program {
 	}
 	public static void main(String[] args) {
 		Connect();
-		/*StatikusTablaTorles(); //pipa
+		Menu();
+		Lekapcs();
+	/*	StatikusTablaTorles(); //pipa
 		StatikusTablaLetrehozas();//pipa
 		StatikusTablaModosiTas(); //pipa
 		StatikusAdatfelvetel_1(); //pipa
 		StatikusAdatfelvetel_3(); //pipa
-		StatikusAdatfelvetel_2(); //pipa*/
+		StatikusAdatfelvetel_2(); //pipa
 		
-		// DinamikusLekerdezes(); //pipa
+		DinamikusLekerdezes(); //pipa
 		//DinamikusAdatfelvetel();
-		//StatikusLekerdezes(); //pipa
-		//DinamikusAdattorles();//pipa
-		//ModosithatoKurzor(); //pipa
-		//Lekapcs();
+		StatikusLekerdezes(); //pipa
+		DinamikusAdattorles();//pipa
+		ModosithatoKurzor(); //pipa*/
+		
 	}
 	
 	
@@ -52,6 +54,42 @@ public class JDBC_program {
 		}
 	}
 
+	public static void Menu() {
+		
+		System.out.println("\n\n\nFőmenü!\nVálaszd ki az alábbi lehetőségeket");
+		System.out.println("\nDefault - Feltölti az eredi táblákat, adatokat és kötéseket");
+		System.out.println("\nDBTorles - Törli az adatbázist");
+		System.out.println("\nAdattorles - Törli a pilótát az adatbázisból");
+		System.out.println("\nLekerdez - Dinamikus lekérdezés a pilótákról");
+		System.out.println("\nEllenorzes - Megadja egy tábla össze adatát");
+		System.out.println("\nKurzor - Módosítja egy csapat részvételének mennyiségét");
+		System.out.println("\nLekapcs - Kilép a programból\n");
+		String parancs = sc.next();
+		if(conn != null) {
+			if(parancs.equals("Lekerdez")) {
+				DinamikusLekerdezes();
+			}else if(parancs.equals("Ellenorzes")) {
+				StatikusLekerdezes();
+			}else if(parancs.equals("Adattorles")) {
+				DinamikusAdattorles();
+			}else if(parancs.equals("Kurzor")) {
+				ModosithatoKurzor();
+			}else if(parancs.equals("Lekapcs")) {
+				Lekapcs();
+			}else if(parancs.equals("DBTorles")) {
+				StatikusTablaTorles();
+			}else if(parancs.equals("Default")) {
+				StatikusTablaLetrehozas();
+				StatikusTablaModosiTas(); 
+				StatikusAdatfelvetel_1(); 
+				StatikusAdatfelvetel_3(); 
+				StatikusAdatfelvetel_2(); 
+			}else {
+				System.out.println("A parancs nem megfelelő! Kérlek add meg a megfelelő parancsot");
+				Menu();
+			}
+		}
+	}
 
 	
 	public static void StatikusTablaLetrehozas() {
@@ -111,6 +149,7 @@ public class JDBC_program {
 			System.out.println("Pályák tábla törölve!\n");
 			
 			s.close();
+			Menu();
 		}catch(Exception ex) {
 			System.err.println(ex.getMessage());
 		}
@@ -165,13 +204,13 @@ public class JDBC_program {
 					"insert into csapat values('Mercedes',251,124,265)",
 			"insert into csapat values('Red Bull',328,76,207)",
 			"insert into csapat values('Ferrari',1034,238,777)",
-			"insert into csapat values('McLaren-Mercedes',908,183,493)",
-			"insert into csapat values('Alpine-Renault',24,1,2)",
-			"insert into csapat values('AlphaTauri-Red Bull',41,1,2)",
-			"insert into csapat values('Aston Martin-Mercedes',30,0,1)",
-			"insert into csapat values('Williams-Mercedes',772,114,313)",
-			"insert into csapat values('Alfa Romeo-Ferrari',172,10,26)",
-			"insert into csapat values('Haas-Ferrari',124,0,0)",
+			"insert into csapat values('McLaren',908,183,493)",
+			"insert into csapat values('Alpine',24,1,2)",
+			"insert into csapat values('AlphaTauri',41,1,2)",
+			"insert into csapat values('Aston Martin',30,0,1)",
+			"insert into csapat values('Williams',772,114,313)",
+			"insert into csapat values('Alfa Romeo',172,10,26)",
+			"insert into csapat values('Haas',124,0,0)",
 
 			};
 		
@@ -231,6 +270,7 @@ public class JDBC_program {
 			}
 			
 			System.out.println("\nMinden adat bekerült az adatbázisba!\n\n");
+			Menu();
 		}
 	}
 	
@@ -252,11 +292,11 @@ public class JDBC_program {
 			}catch(Exception ex) {
 				System.out.println(ex.getMessage());
 			}
-		}	
+		}	Menu();
 	}
 	
 	
-	public static void DinamikusAdatfelvetel() {
+/*	public static void DinamikusAdatfelvetel() {
 		if(conn != null) {
 			String sqlp="insert into csapat(csapatnev, futamokszama, gyozelmek, podiumok)" + "values(?,?,?,?)";
 			
@@ -287,7 +327,7 @@ public class JDBC_program {
 			}
 		}
 	}
-
+*/
 	public static void DinamikusAdattorles() {
 		System.out.println("Melyik pilótát töröljük az adatbázisból?: ");
 		String rajtszam = sc.next();
@@ -302,8 +342,9 @@ public class JDBC_program {
 				System.out.println(rajtszam + " rajtszámú pilóta törölve\n");
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
+				DinamikusAdattorles();
 			}
-		}
+		} Menu();
 	}
 	
 	
@@ -335,7 +376,7 @@ public class JDBC_program {
 					rs.close();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
-				}
+				} Menu();
 			}
 		}else if(tabla.equals("palyak")) {
 			if(conn != null) {
@@ -357,7 +398,7 @@ public class JDBC_program {
 					rs.close();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
-				}
+				}Menu();
 			}
 		}else if(tabla.equals("csapat")){
 			if(conn != null) {
@@ -380,7 +421,7 @@ public class JDBC_program {
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
 				}
-			}
+			}Menu();
 		}else {
 			System.out.println("Nem megfelelő táblát adott meg. Kérem próbálja újra");
 			StatikusLekerdezes();
@@ -400,12 +441,13 @@ public class JDBC_program {
 					int regifutamokszama = rs.getInt("futamokszama");
 					rs.updateInt("futamokszama", (regifutamokszama*2));
 					rs.updateRow();
-					System.out.printf("Az futamok száma a módosítás után: %d",regifutamokszama);
+					System.out.printf("Az futamok száma a módosítás után: %d",regifutamokszama*2);
 				}
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
+				ModosithatoKurzor();
 			}
-		}
+		}Menu();
 	}
 	
 
@@ -417,7 +459,7 @@ public class JDBC_program {
 			}catch (Exception e) {
 			System.err.println(e.getMessage());
 			}
-		}
+		} 
 	}
 	
 	
