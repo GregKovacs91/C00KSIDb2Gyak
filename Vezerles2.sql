@@ -1,1 +1,0 @@
-SELECT 17>14 FROM dual;
