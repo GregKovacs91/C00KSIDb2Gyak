@@ -1,0 +1,3 @@
+LOOP
+ utasitasok;
+ END LOOP;
