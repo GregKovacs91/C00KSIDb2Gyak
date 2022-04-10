@@ -2,5 +2,5 @@ set serveroutput on
 declare
 v_name varchar2(100);
 begin
-dbms_output.put_line(Upper('Kovács Gergo')); 
+dbms_output.put_line(Upper('KovÃ¡cs Gergo')); 
 end;
