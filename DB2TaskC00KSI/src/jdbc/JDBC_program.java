@@ -25,30 +25,40 @@ public class JDBC_program {
 		return null;
 	}
 	public static void main(String[] args) {
-		Connect();
-		Menu();
-		Lekapcs();
-	/*	StatikusTablaTorles(); //pipa
-		StatikusTablaLetrehozas();//pipa
-		StatikusTablaModosiTas(); //pipa
-		StatikusAdatfelvetel_1(); //pipa
-		StatikusAdatfelvetel_3(); //pipa
-		StatikusAdatfelvetel_2(); //pipa
+		Connect(); // 48 sor
+		//Menu(); // 66 sor
 		
-		DinamikusLekerdezes(); //pipa
-		//DinamikusAdatfelvetel();
-		StatikusLekerdezes(); //pipa
-		DinamikusAdattorles();//pipa
-		ModosithatoKurzor(); //pipa*/
+		//Lekapcs(); //650 sor
+		//StatikusTablaTorles();  //234 sor
+		//StatikusTablaLetrehozas();//107 sor
+		//StatikusTablaModosiTas(); //130 sor
+		//StatikusAdatfelvetel_1(); //261 sor
+		//StatikusAdatfelvetel_3(); //334 sor
+		//StatikusAdatfelvetel_2(); //304 sor
+
 		
+		//	DinamikusAdatfelvetel(); //143 sor
+		//	DinamikusLekerdezes(); //380 sor
+		//	DinamikusAdattorles();//478 sor
+		//	ModosithatoKurzor(); //626 sor
+		//	StatikusLekerdezes(); // 546 sor	
+		//		DinamikusAdatlekerdezes2(); //666 sor
 	}
 	
 	
 	public static void Connect() {
 		
 		try {
-			conn = DriverManager.getConnection(url, user, pwd);
-			System.out.println("Sikeres kapcsolodasás\n");
+			System.out.println("Kérem a felhasználót a bejelentkezéshez");
+			String felhasznalo = sc.next().trim();
+			if(felhasznalo.equals("H22_C00KSI")) {
+				System.out.println("Kérem a jelszót");
+				String password = sc.next().trim();
+				if(password.equals("C00KSI")){
+					conn = DriverManager.getConnection(url,user,pwd);
+					System.out.println("Sikeres kapcsolodasás\n"); Menu();
+					}else { System.out.println("A jelszó nem megfelelő\n \n"); Connect();}
+				}else { System.out.println("A felhasználó nem megfelelő nem megfelelő\n \n"); Connect();} 
 		}catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -59,8 +69,10 @@ public class JDBC_program {
 		System.out.println("\n\n\nFőmenü!\nVálaszd ki az alábbi lehetőségeket");
 		System.out.println("\nDefault - Feltölti az eredi táblákat, adatokat és kötéseket");
 		System.out.println("\nDBTorles - Törli az adatbázist");
-		System.out.println("\nAdattorles - Törli a pilótát az adatbázisból");
-		System.out.println("\nLekerdez - Dinamikus lekérdezés a pilótákról");
+		System.out.println("\nAdatFelvisz - Adatfelvitel a megadott táblába");
+		System.out.println("\nAdattorles - Törli a rekordot az adatbázisból");
+		System.out.println("\nLekerdez - Dinamikus lekérdezés a tábla mezőiről");
+		System.out.println("\nSorLekerdez - Dinamikus lekérdezés az adott tábla egy adott soráról");
 		System.out.println("\nEllenorzes - Megadja egy tábla össze adatát");
 		System.out.println("\nKurzor - Módosítja egy csapat részvételének mennyiségét");
 		System.out.println("\nLekapcs - Kilép a programból\n");
@@ -78,6 +90,10 @@ public class JDBC_program {
 				Lekapcs();
 			}else if(parancs.equals("DBTorles")) {
 				StatikusTablaTorles();
+			}else if(parancs.equals("AdatFelvisz")) {
+				DinamikusAdatfelvetel();
+			}else if(parancs.equals("SorLekerdez")) {
+				DinamikusAdatlekerdezes2();
 			}else if(parancs.equals("Default")) {
 				StatikusTablaLetrehozas();
 				StatikusTablaModosiTas(); 
@@ -95,7 +111,7 @@ public class JDBC_program {
 	public static void StatikusTablaLetrehozas() {
 		String sqlp_versenyzok="create table versenyzok(rajtszam number(2) primary key, nev char(20) not null, futamok number(3) check(futamok>0), gyozelmek number(3), debutalas date)";
 		String sqlp_palyak="create table palyak (id number(3) primary key, helyszin char(80) not null, orszag char(40), futamnapja date, palyahossz number(4))";
-		String sqlp_csapat="create table csapat (csapatnev char(23) primary key, futamokszama number(4) NOT NULL, gyozelmek number(3), podiumok number(3))";
+		String sqlp_csapat="create table csapat (csapatnev char(23) primary key, futamokszama number(4) NOT NULL, gyozelmek number(3), podiumok number(3), bajnoksagok number(2), debutalas date)";
 		
 		
 		if(conn!=null) {
@@ -128,6 +144,97 @@ public class JDBC_program {
 		}
 	}
 
+		public static void DinamikusAdatfelvetel() {
+			if(conn != null) {
+		System.out.println("Add meg a táblát, ahova szeretnél új adatokat berakni (versenyzok, csapat vagy palyak):");
+		String tabla = sc.next().trim();
+		
+		if(tabla.equals("palyak")) {
+		
+		System.out.println("Kérem a pálya azonosítóját: ");
+		int id= sc.nextInt();
+		System.out.println("Mi a pálya neve?: ");
+		String helyszin = sc.next().trim();
+		System.out.println("Melyik országban található a pálya?: ");
+		String orszag = sc.next().trim();
+		System.out.println("Melyik napon lesz a futam?: ");
+		String futamnapja = sc.next().trim();
+		System.out.println("Milyen hosszú a pálya?: ");
+		int palyahossz = sc.nextInt();
+		
+		String sqlp="insert into palyak values("+id+",'"+helyszin+"','"+orszag+"', to_date('"+futamnapja+"', 'yyyy.mm.dd'), "+palyahossz+")";
+		//System.out.println(sqlp);
+		try {
+			
+			s=conn.createStatement();
+			s.executeUpdate(sqlp);
+			
+			System.out.println("Pálya felvéve\n");
+		}catch(Exception ex) {
+			System.err.println(ex.getMessage());
+		}
+		}
+		
+		if(tabla.equals("versenyzok")) {
+			
+			
+			System.out.println("Kérem a rajtszámát: ");
+			int rajtszam= sc.nextInt();
+			System.out.println("Hogy hívják a pilótát?: ");
+			String nev = sc.next().trim();
+			System.out.println("Mennyi futamot teljesített már (nem lehet nulla) ?: ");
+			int futamok = sc.nextInt();
+			System.out.println("Hány futamot nyert meg?: ");
+			int gyozelmek = sc.nextInt();
+			System.out.println("Mikor debütált?: ");
+			String debutalas = sc.next().trim();
+			System.out.println("Melyik csapatban versenyzik?: ");
+			String csapatnev = sc.next().trim();
+			
+			String sqlp="insert into versenyzok values("+rajtszam+",' "+nev+"', "+futamok+", "+gyozelmek+", to_date('"+debutalas+"', 'yyyy.mm.dd'), '"+csapatnev+"')";
+			
+			System.out.println(sqlp);
+			try {
+				
+				s=conn.createStatement();
+				s.executeUpdate(sqlp);
+				
+				System.out.println("Versenyző felvéve\n");
+			}catch(Exception ex) {
+				System.err.println(ex.getMessage());
+			}
+		}
+		
+		if(tabla.equals("csapat")) {
+		
+		System.out.println("Kérem a csapat nevét: ");
+		String csapatnev = sc.next().trim();
+		System.out.println("Hány futamon vettek részt??: ");
+		int futamokszama = sc.nextInt();
+		System.out.println("Hány futamot nyertek meg?: ");
+		int gyozelmek = sc.nextInt();
+		System.out.println("Hányszor álltak a csapat versenyzői a pódiumon?: ");
+		int podiumok = sc.nextInt();
+		System.out.println("Hányszor nyert a csapat világbajnoki címet?: ");
+		int bajnoksagok = sc.nextInt();
+		System.out.println("Mikor debütált a csapat?: ");
+		String debutalas = sc.next().trim();
+		
+		
+		String sqlp="insert into csapat values('"+csapatnev+"', "+futamokszama+", "+gyozelmek+", "+podiumok+", "+bajnoksagok+", to_date('"+debutalas+"', 'yyyy.mm.dd'))";
+		System.out.println(sqlp);
+		try {
+			
+			s=conn.createStatement();
+			s.executeUpdate(sqlp);
+			
+			System.out.println("Csapat felvéve\n");
+		}catch(Exception ex) {
+			System.err.println(ex.getMessage());
+		}}Menu();} 
+		
+	}
+	
 	public static void StatikusTablaTorles() {
 		if(conn != null) {}
 		try {
@@ -201,16 +308,16 @@ public class JDBC_program {
 	public static void StatikusAdatfelvetel_3() {
 		if(conn != null) {
 			String sqlp[]= {
-					"insert into csapat values('Mercedes',251,124,265)",
-			"insert into csapat values('Red Bull',328,76,207)",
-			"insert into csapat values('Ferrari',1034,238,777)",
-			"insert into csapat values('McLaren',908,183,493)",
-			"insert into csapat values('Alpine',24,1,2)",
-			"insert into csapat values('AlphaTauri',41,1,2)",
-			"insert into csapat values('Aston Martin',30,0,1)",
-			"insert into csapat values('Williams',772,114,313)",
-			"insert into csapat values('Alfa Romeo',172,10,26)",
-			"insert into csapat values('Haas',124,0,0)",
+					"insert into csapat values('Mercedes',251,124,265,8,to_date('1954.07.04', 'yyyy.mm.dd'))",
+					"insert into csapat values('Red Bull',328,76,207,4,to_date('2005.03.06', 'yyyy.mm.dd'))",
+					"insert into csapat values('Ferrari',1034,238,777,16,to_date('1950.05.21', 'yyyy.mm.dd'))",
+					"insert into csapat values('McLaren',908,183,493,8,to_date('1966.05.22', 'yyyy.mm.dd'))",
+					"insert into csapat values('Alpine',24,1,2,0,to_date('2021.03.28', 'yyyy.mm.dd'))",
+					"insert into csapat values('AlphaTauri',41,1,2,0,to_date('2020.07.05', 'yyyy.mm.dd'))",
+					"insert into csapat values('Aston Martin',30,0,1,0,to_date('1959.05.31', 'yyyy.mm.dd'))",
+					"insert into csapat values('Williams',772,114,313,9,to_date('1977.05.08', 'yyyy.mm.dd'))",
+					"insert into csapat values('Alfa Romeo',172,10,26,0,to_date('1950.05.13', 'yyyy.mm.dd'))",
+					"insert into csapat values('Haas',124,0,0,0,to_date('2016.03.20', 'yyyy.mm.dd'))",
 
 			};
 		
@@ -238,20 +345,20 @@ public class JDBC_program {
 			"insert into versenyzok values(11,'Sergio Pérez',219,2,to_date('2011.03.27', 'yyyy.mm.dd'),'Red Bull')",
 			"insert into versenyzok values(16,'Charles Leclerc',83,3,to_date('2018.03.25', 'yyyy.mm.dd'),'Ferrari')",
 			"insert into versenyzok values(55,'Carlos Sainz Jr.',143,0,to_date('2015.03.15', 'yyyy.mm.dd'),'Ferrari')",
-			"insert into versenyzok values(3,'Daniel Ricciardo',212,8,to_date('2011.07.11', 'yyyy.mm.dd'),'McLaren-Mercedes')",
-			"insert into versenyzok values(4,'Lando Norris',62,0,to_date('2019.03.17', 'yyyy.mm.dd'),'McLaren-Mercedes')",
-			"insert into versenyzok values(14,'Fernando Alonso',338,32,to_date('2001.03.04', 'yyyy.mm.dd'),'Alpine-Renault')",
-			"insert into versenyzok values(31,'Esteban Ocon',91,1,to_date('2016.08.28', 'yyyy.mm.dd'),'Alpine-Renault')",
-			"insert into versenyzok values(10,'Pierre Gasly',88,1,to_date('2017.10.01', 'yyyy.mm.dd'),'AlphaTauri-Red Bull')",
-			"insert into versenyzok values(22,'Cunoda Júki',24,0,to_date('2021.03.28', 'yyyy.mm.dd'),'AlphaTauri-Red Bull')",
-			"insert into versenyzok values(5,'Sebastian Vettel',280,53,to_date('2007.06.17', 'yyyy.mm.dd'),'Aston Martin-Mercedes')",
-			"insert into versenyzok values(18,'Lance Stroll',103,0,to_date('2017.03.27', 'yyyy.mm.dd'),'Aston Martin-Mercedes')",
-			"insert into versenyzok values(6,'Nicholas Latifi',41,0,to_date('2020.07.05', 'yyyy.mm.dd'),'Williams-Mercedes')",
-			"insert into versenyzok values(23,'Alexander Albon',40,0,to_date('2019.03.19', 'yyyy.mm.dd'),'Williams-Mercedes')",
-			"insert into versenyzok values(24,'Csou Kuan-jü',2,0,to_date('2022.03.20', 'yyyy.mm.dd'),'Alfa Romeo-Ferrari')",
-			"insert into versenyzok values(77,'Valtteri Bottas',181,10,to_date('2013.03.17', 'yyyy.mm.dd'),'Alfa Romeo-Ferrari')",
-			"insert into versenyzok values(47,'Mick Schumacher',24,0,to_date('2021.03.28', 'yyyy.mm.dd'),'Haas-Ferrari')",
-			"insert into versenyzok values(20,'Kevin Magnussen',122,0,to_date('2014.03.16', 'yyyy.mm.dd'),'Haas-Ferrari')",
+			"insert into versenyzok values(3,'Daniel Ricciardo',212,8,to_date('2011.07.11', 'yyyy.mm.dd'),'McLaren')",
+			"insert into versenyzok values(4,'Lando Norris',62,0,to_date('2019.03.17', 'yyyy.mm.dd'),'McLaren')",
+			"insert into versenyzok values(14,'Fernando Alonso',338,32,to_date('2001.03.04', 'yyyy.mm.dd'),'Alpine')",
+			"insert into versenyzok values(31,'Esteban Ocon',91,1,to_date('2016.08.28', 'yyyy.mm.dd'),'Alpine')",
+			"insert into versenyzok values(10,'Pierre Gasly',88,1,to_date('2017.10.01', 'yyyy.mm.dd'),'AlphaTauri')",
+			"insert into versenyzok values(22,'Cunoda Júki',24,0,to_date('2021.03.28', 'yyyy.mm.dd'),'AlphaTauri')",
+			"insert into versenyzok values(5,'Sebastian Vettel',280,53,to_date('2007.06.17', 'yyyy.mm.dd'),'Aston Martin')",
+			"insert into versenyzok values(18,'Lance Stroll',103,0,to_date('2017.03.27', 'yyyy.mm.dd'),'Aston Martin')",
+			"insert into versenyzok values(6,'Nicholas Latifi',41,0,to_date('2020.07.05', 'yyyy.mm.dd'),'Williams')",
+			"insert into versenyzok values(23,'Alexander Albon',40,0,to_date('2019.03.19', 'yyyy.mm.dd'),'Williams')",
+			"insert into versenyzok values(24,'Csou Kuan-jü',2,0,to_date('2022.03.20', 'yyyy.mm.dd'),'Alfa Romeo')",
+			"insert into versenyzok values(77,'Valtteri Bottas',181,10,to_date('2013.03.17', 'yyyy.mm.dd'),'Alfa Romeo')",
+			"insert into versenyzok values(47,'Mick Schumacher',24,0,to_date('2021.03.28', 'yyyy.mm.dd'),'Haas')",
+			"insert into versenyzok values(20,'Kevin Magnussen',122,0,to_date('2014.03.16', 'yyyy.mm.dd'),'Haas')",
 
 
 
@@ -275,60 +382,108 @@ public class JDBC_program {
 	}
 	
 	public static void DinamikusLekerdezes() {
-		System.out.println("Adja meg a futamok számát: ");
-		String futamok = sc.next().trim();
-		String sqlp = "select nev from versenyzok where gyozelmek>0 AND  futamok >= '"+futamok+"'";
+		System.out.println("Adja meg melyik táblából szeretne lekérdezni: (versenyzok, csapat vagy palyak) ");
+		String tabla = sc.next().trim();
+		
+		if(tabla.equals("versenyzok")) {
+		System.out.println("Adja meg melyik mezőt szeretné lekérdezni: (rajtszam, nev, futamok, gyozelmek, debutalas vagy csapatnev");
+		String mezo = sc.next().trim();
+	
+		String sqlp = "select "+mezo+" from versenyzok";
 		if(conn != null) {
 			try {
 				s=conn.createStatement();
 				s.executeQuery(sqlp);
 				rs=s.getResultSet();
 				while(rs.next()) {
-						String nev = rs.getString("nev");
-						
-						System.out.println("Versenyzők: "+nev);
+					
+					if(mezo.equals("rajtszam")) {String nev = rs.getString("rajtszam");
+						System.out.println("Adatok: "+nev);} 
+					if(mezo.equals("nev")) {String nev = rs.getString("nev");
+					System.out.println("Adatok: "+nev);} 
+					if(mezo.equals("futamok")) {String nev = rs.getString("futamok");
+					System.out.println("Adatok: "+nev);} 
+					if(mezo.equals("gyozelmek")) {String nev = rs.getString("gyozelmek");
+					System.out.println("Adatok: "+nev);} 
+					if(mezo.equals("debutalas")) {String nev = rs.getString("debutalas");
+					System.out.println("Adatok: "+nev);} 
+					if(mezo.equals("csapatnev")) {String nev = rs.getString("csapatnev");
+					System.out.println("Adatok: "+nev);} 
+				
 				}
 				rs.close();
 			}catch(Exception ex) {
 				System.out.println(ex.getMessage());
 			}
-		}	Menu();
+		}Menu();}	
+		
+		if(tabla.equals("palyak")) {
+			System.out.println("Adja meg melyik mezőt szeretné lekérdezni: (id, helyszin, orszag, futamnapja, palyahossz");
+			String mezo = sc.next().trim();
+		
+			String sqlp = "select "+mezo+" from palyak";
+			if(conn != null) {
+				try {
+					s=conn.createStatement();
+					s.executeQuery(sqlp);
+					rs=s.getResultSet();
+					while(rs.next()) {
+						if(mezo.equals("id")) {String nev = rs.getString("id");
+						System.out.println("Adatok: "+nev);} 
+						if(mezo.equals("helyszin")) {String nev = rs.getString("helyszin");
+						System.out.println("Adatok: "+nev);} 
+						if(mezo.equals("orszag")) {String nev = rs.getString("orszag");
+						System.out.println("Adatok: "+nev);} 
+						if(mezo.equals("futamnapja")) {String nev = rs.getString("futamnapja");
+						System.out.println("Adatok: "+nev);} 
+						if(mezo.equals("palyahossz")) {String nev = rs.getString("palyahossz");
+						System.out.println("Adatok: "+nev);}
+					}
+					rs.close();
+				}catch(Exception ex) {
+					System.out.println(ex.getMessage());
+				}
+			}Menu();}	
+		
+		if(tabla.equals("csapat")) {
+			System.out.println("Adja meg melyik mezőt szeretné lekérdezni: (csapatnev, futamokszama, gyozelmek, podiumok, bajnoksagok vagy debutalas");
+			String mezo = sc.next().trim();
+		
+			String sqlp = "select "+mezo+" from csapat";
+			System.out.println(sqlp);
+			if(conn != null) {
+				try {
+					s=conn.createStatement();
+					s.executeQuery(sqlp);
+					rs=s.getResultSet();
+					while(rs.next()) {
+						if(mezo.equals("csapatnev")) {String nev = rs.getString("csapatnev");
+						System.out.println("Adatok: "+nev);} 
+						if(mezo.equals("futamokszama")) {String nev = rs.getString("futamokszama");
+						System.out.println("Adatok: "+nev);} 
+						if(mezo.equals("gyozelmek")) {String nev = rs.getString("gyozelmek");
+						System.out.println("Adatok: "+nev);} 
+						if(mezo.equals("podiumok")) {String nev = rs.getString("podiumok");
+						System.out.println("Adatok: "+nev);}
+						if(mezo.equals("bajnoksagok")) {String nev = rs.getString("bajnoksagok");
+						System.out.println("Adatok: "+nev);}
+						if(mezo.equals("debutalas")) {String nev = rs.getString("debutalas");
+						System.out.println("Adatok: "+nev);}
+					}
+					rs.close();
+				}catch(Exception ex) {
+					System.out.println(ex.getMessage());
+				}
+			}Menu();}	
 	}
 	
 	
-/*	public static void DinamikusAdatfelvetel() {
-		if(conn != null) {
-			String sqlp="insert into csapat(csapatnev, futamokszama, gyozelmek, podiumok)" + "values(?,?,?,?)";
-			
-			
-			System.out.println("Kérem a csapat nevét: ");
-			String nev = sc.next().trim();
-			System.out.println("Hány futamot teljesített már?: ");
-			int futamok = sc.nextInt();
-			System.out.println("Hány futamot nyert meg?: ");
-			int gyozelmek = sc.nextInt();
-			System.out.println("Mikor debütált?: ");
-			String debutalas = sc.next().trim();
 
-			
-			try {
-				ps=conn.prepareStatement(sqlp);
-				
-				ps.setString(1, nev);
-				ps.setInt(2, futamok);
-				ps.setInt(3, gyozelmek);
-				ps.setString(4, debutalas);
-	
-				ps.executeUpdate(sqlp);
-				ps.close();
-				System.out.println("Pilóta felvéve\n");
-			}catch(Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-		}
-	}
-*/
 	public static void DinamikusAdattorles() {
+		System.out.println("Melyik táblából töröljük ki a sorokat? (versenyzok, csapat vagy palyak)");
+		String torles = sc.next().trim();
+		
+		if(torles.equals("versenyzok")) {
 		System.out.println("Melyik pilótát töröljük az adatbázisból?: ");
 		String rajtszam = sc.next();
 		String user = null;
@@ -344,7 +499,48 @@ public class JDBC_program {
 				System.err.println(ex.getMessage());
 				DinamikusAdattorles();
 			}
-		} Menu();
+		}Menu();}
+		
+		if(torles.equals("palyak")) {
+			System.out.println("Melyik pályát töröljük az adatbázisból?: (Alap esetben az azonosítók száma: 1-22 ");
+			String id = sc.next();
+			String user = null;
+			String sqlp = "delete from palyak where id=?";
+			if (conn != null) {
+				try {
+					ps = conn.prepareStatement(sqlp);
+					ps.setString(1, id);
+					ps.executeUpdate();
+					ps.close();
+					System.out.println(id + " azonosítójú pálya törölve\n");
+				} catch (Exception ex) {
+					System.err.println(ex.getMessage());
+					DinamikusAdattorles();
+				}
+			}Menu();}
+		
+		if(torles.equals("csapat")) {
+			System.out.println("Melyik csapatot töröljük az adatbázisból? (A csapat kitörlése a versenyzők táblára is hatni fog) : ");
+			String csapatnev = sc.next();
+			String user = null;
+			String sqlp2 = "delete from csapat where csapatnev='"+csapatnev+"'";
+			String sqlp1 = "delete from versenyzok where csapatnev='"+csapatnev+"'";
+			if (conn != null) {
+				try {
+				/*	ps = conn.prepareStatement(sqlp);
+					ps.setString(1, csapatnev);
+					ps.executeUpdate();*/
+					
+					s=conn.createStatement();
+						s.executeUpdate(sqlp2);
+						s.executeUpdate(sqlp1);
+					ps.close();
+					System.out.println(csapatnev + " nevű csapat törölve\n");
+				} catch (Exception ex) {
+					System.err.println(ex.getMessage());
+					DinamikusAdattorles();
+				}
+			}Menu();}
 	}
 	
 	
@@ -352,7 +548,7 @@ public class JDBC_program {
 	
 	
 	public static void StatikusLekerdezes() {
-		System.out.println("Add meg a táblát, amelynek szeretnéd az adatait látni:");
+		System.out.println("Add meg a táblát, amelynek szeretnéd az adatait látni? (versenyzok, csapat vagy palyak):");
 		String tabla = sc.next().trim();
 		if(tabla.equals("versenyzok")) {
 			if(conn != null) {
@@ -376,7 +572,7 @@ public class JDBC_program {
 					rs.close();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
-				} Menu();
+				}Menu();
 			}
 		}else if(tabla.equals("palyak")) {
 			if(conn != null) {
@@ -403,8 +599,8 @@ public class JDBC_program {
 		}else if(tabla.equals("csapat")){
 			if(conn != null) {
 				String sqlp="select * from csapat";
-				System.out.println("Csapatnev,                     FutamokSzama, Gyozelmek, Podiumok");
-				System.out.println("----------------------------------------------------------------");
+				System.out.println("Csapatnev,                  FutamokSzama, Gyozelmek, Podiumok, Bajnoki Címek, Debutálás");
+				System.out.println("--------------------------------------------------------------");
 				try {
 					s=conn.createStatement();
 					s.executeQuery(sqlp);
@@ -414,8 +610,10 @@ public class JDBC_program {
 							int futamokSzama = rs.getInt("futamokszama");
 							int gyozelmek = rs.getInt("gyozelmek");
 							int podiumok = rs.getInt("podiumok");
+							int bajnoksagok = rs.getInt("bajnoksagok");
+							String debutalas = rs.getString("debutalas");
 							
-							System.out.println(csapatNev+"      "+futamokSzama+"             "+gyozelmek+"       "+podiumok);
+							System.out.println(csapatNev+"      "+futamokSzama+"             "+gyozelmek+"       "+podiumok+"   "+bajnoksagok+ "   "+debutalas);
 					}
 					rs.close();
 				}catch(Exception ex) {
@@ -430,18 +628,20 @@ public class JDBC_program {
 	
 	
 	public static void ModosithatoKurzor() {
-		System.out.println("Csapat név megadása: ");
+		System.out.println("Melyik csapat adatait duplázzuk meg? ");
 		String csapatnev = sc.next().trim();
-		String sqlp = "select futamokszama from csapat where csapatnev = '"+ csapatnev +"'";
+		System.out.println("A "+csapatnev+ " csapat melyik adatát duplázzuk? (futamokszama, gyozelmek, podiumok, bajnoksagok) ");
+		String adat = sc.next().trim();
+		String sqlp = "select "+adat+" from csapat where csapatnev = '"+ csapatnev +"'";
 		if (conn != null) {
 			try {
 				s = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 				rs = s.executeQuery(sqlp);
 				while (rs.next()) {
-					int regifutamokszama = rs.getInt("futamokszama");
-					rs.updateInt("futamokszama", (regifutamokszama*2));
+					int regiadatok = rs.getInt(adat);
+					rs.updateInt(adat, (regiadatok*2));
 					rs.updateRow();
-					System.out.printf("Az futamok száma a módosítás után: %d",regifutamokszama*2);
+					System.out.printf("Az futamok száma a módosítás után: %d \n",regiadatok*2);
 				}
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
@@ -463,5 +663,92 @@ public class JDBC_program {
 	}
 	
 	
-
+	public static void DinamikusAdatlekerdezes2() {
+		System.out.println("Add meg a táblát, amelynek szeretnéd az adatait látni? (versenyzok, csapat vagy palyak):");
+		String tabla = sc.next().trim();
+		
+		if(tabla.equals("versenyzok")) {
+			System.out.println("Add meg a pilóta azonsítóját");
+			String adat = sc.next().trim();
+			if(conn != null) {
+				String sqlp="select * from versenyzok where rajtszam="+adat;
+				System.out.println("Rajtszam          Nev          Csapat                  Futamok           Gyozelem     Debutalas");
+				System.out.println("-----------------------------------------------------------------------------------------------");
+				try {
+					s=conn.createStatement();
+					s.executeQuery(sqlp);
+					rs=s.getResultSet();
+					while(rs.next()) {
+							int rajtszam = rs.getInt("rajtszam");
+							String nev=rs.getString("nev");
+							String csapatnev = rs.getString("csapatnev");
+							int futamok = rs.getInt("futamok");
+							int gyozelmek = rs.getInt("gyozelmek");
+							String debutalas = rs.getString("debutalas");
+							
+							System.out.println(rajtszam+"        "+nev+"  "+csapatnev+"     "+futamok+"            "+gyozelmek+"        "+debutalas);
+					}
+					rs.close();
+				}catch(Exception ex) {
+					System.out.println(ex.getMessage());
+					DinamikusAdatlekerdezes2();
+				}Menu();
+			}
+		}else if(tabla.equals("palyak")) {
+			System.out.println("Add meg a pálya azonsítóját");
+			String adat = sc.next().trim();
+			if(conn != null) {
+				String sqlp="select * from palyak where id="+adat;
+				System.out.println("ID, Helyszín,                                                                    Ország,                                     Futamnapja           Palyahossz");
+				System.out.println("----------------------------------------------------------------------------------------------------------------------------------------");
+				try {
+					s=conn.createStatement();
+					s.executeQuery(sqlp);
+					rs=s.getResultSet();
+					while(rs.next()) {
+							int id=rs.getInt("id");
+							String helyszin = rs.getString("helyszin");
+							String orszag = rs.getString("orszag");
+							String futamNapja = rs.getString("futamnapja");
+							int palyahossz=rs.getInt("palyahossz");
+							System.out.println(id+" "+helyszin+" "+orszag+" "+futamNapja+"       "+palyahossz);
+					}
+					rs.close();
+				}catch(Exception ex) {
+					System.out.println(ex.getMessage());
+					DinamikusAdatlekerdezes2();
+				}Menu();
+			}
+		}else if(tabla.equals("csapat")){
+			System.out.println("Add meg a csapat nevét");
+			String adat = sc.next().trim();
+			if(conn != null) {
+				String sqlp="select * from csapat where csapatnev ='"+adat+"'";
+				System.out.println("Csapatnev,                  FutamokSzama, Gyozelmek, Podiumok, Bajnoki Címek, Debutálás");
+				System.out.println("--------------------------------------------------------------");
+				try {
+					s=conn.createStatement();
+					s.executeQuery(sqlp);
+					rs=s.getResultSet();
+					while(rs.next()) {
+							String csapatNev=rs.getString("csapatNev");
+							int futamokSzama = rs.getInt("futamokszama");
+							int gyozelmek = rs.getInt("gyozelmek");
+							int podiumok = rs.getInt("podiumok");
+							int bajnoksagok = rs.getInt("bajnoksagok");
+							String debutalas = rs.getString("debutalas");
+							
+							System.out.println(csapatNev+"      "+futamokSzama+"             "+gyozelmek+"       "+podiumok+"   "+bajnoksagok+ "   "+debutalas);
+					}
+					rs.close();
+				}catch(Exception ex) {
+					System.out.println(ex.getMessage());
+					DinamikusAdatlekerdezes2();
+				}
+			}Menu();
+		}else {
+			System.out.println("Nem megfelelő táblát adott meg. Kérem próbálja újra");
+			DinamikusAdatlekerdezes2();
+		}
+	}
 }
