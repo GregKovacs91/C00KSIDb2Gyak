@@ -111,7 +111,7 @@ public class JDBC_program {
 	public static void StatikusTablaLetrehozas() {
 		String sqlp_versenyzok="create table versenyzok(rajtszam number(2) primary key, nev char(20) not null, futamok number(3) check(futamok>0), gyozelmek number(3), debutalas date)";
 		String sqlp_palyak="create table palyak (id number(3) primary key, helyszin char(80) not null, orszag char(40), futamnapja date, palyahossz number(4))";
-		String sqlp_csapat="create table csapat (csapatnev char(23) primary key, futamokszama number(4) NOT NULL, gyozelmek number(3), podiumok number(3), bajnoksagok number(2), debutalas date)";
+		String sqlp_csapat="create table csapat (csapatnev char(23) primary key, futamokszama number(4) NOT NULL, gyozelmek number(4), podiumok number(4), bajnoksagok number(3), debutalas date)";
 		
 		
 		if(conn!=null) {
@@ -170,6 +170,7 @@ public class JDBC_program {
 			s.executeUpdate(sqlp);
 			
 			System.out.println("Pálya felvéve\n");
+			Menu();
 		}catch(Exception ex) {
 			System.err.println(ex.getMessage());
 		}
@@ -193,13 +194,14 @@ public class JDBC_program {
 			
 			String sqlp="insert into versenyzok values("+rajtszam+",' "+nev+"', "+futamok+", "+gyozelmek+", to_date('"+debutalas+"', 'yyyy.mm.dd'), '"+csapatnev+"')";
 			
-			System.out.println(sqlp);
+			//System.out.println(sqlp);
 			try {
 				
 				s=conn.createStatement();
 				s.executeUpdate(sqlp);
 				
 				System.out.println("Versenyző felvéve\n");
+				Menu();
 			}catch(Exception ex) {
 				System.err.println(ex.getMessage());
 			}
@@ -222,16 +224,17 @@ public class JDBC_program {
 		
 		
 		String sqlp="insert into csapat values('"+csapatnev+"', "+futamokszama+", "+gyozelmek+", "+podiumok+", "+bajnoksagok+", to_date('"+debutalas+"', 'yyyy.mm.dd'))";
-		System.out.println(sqlp);
+	//	System.out.println(sqlp);
 		try {
 			
 			s=conn.createStatement();
 			s.executeUpdate(sqlp);
 			
 			System.out.println("Csapat felvéve\n");
+			Menu();
 		}catch(Exception ex) {
 			System.err.println(ex.getMessage());
-		}}Menu();} 
+		}}} 
 		
 	}
 	
@@ -309,14 +312,14 @@ public class JDBC_program {
 		if(conn != null) {
 			String sqlp[]= {
 					"insert into csapat values('Mercedes',251,124,265,8,to_date('1954.07.04', 'yyyy.mm.dd'))",
-					"insert into csapat values('Red Bull',328,76,207,4,to_date('2005.03.06', 'yyyy.mm.dd'))",
+					"insert into csapat values('Red_Bull',328,76,207,4,to_date('2005.03.06', 'yyyy.mm.dd'))",
 					"insert into csapat values('Ferrari',1034,238,777,16,to_date('1950.05.21', 'yyyy.mm.dd'))",
 					"insert into csapat values('McLaren',908,183,493,8,to_date('1966.05.22', 'yyyy.mm.dd'))",
 					"insert into csapat values('Alpine',24,1,2,0,to_date('2021.03.28', 'yyyy.mm.dd'))",
-					"insert into csapat values('AlphaTauri',41,1,2,0,to_date('2020.07.05', 'yyyy.mm.dd'))",
-					"insert into csapat values('Aston Martin',30,0,1,0,to_date('1959.05.31', 'yyyy.mm.dd'))",
+					"insert into csapat values('Alpha_Tauri',41,1,2,0,to_date('2020.07.05', 'yyyy.mm.dd'))",
+					"insert into csapat values('Aston_Martin',30,0,1,0,to_date('1959.05.31', 'yyyy.mm.dd'))",
 					"insert into csapat values('Williams',772,114,313,9,to_date('1977.05.08', 'yyyy.mm.dd'))",
-					"insert into csapat values('Alfa Romeo',172,10,26,0,to_date('1950.05.13', 'yyyy.mm.dd'))",
+					"insert into csapat values('Alfa_Romeo',172,10,26,0,to_date('1950.05.13', 'yyyy.mm.dd'))",
 					"insert into csapat values('Haas',124,0,0,0,to_date('2016.03.20', 'yyyy.mm.dd'))",
 
 			};
@@ -341,22 +344,22 @@ public class JDBC_program {
 			String sqlp[]= {
 					"insert into versenyzok values(44,'Lewis Hamilton',290,103,to_date('2007.03.18', 'yyyy.mm.dd'),'Mercedes')",
 			"insert into versenyzok values(63,' George Russell',62,0,to_date('2019.03.17', 'yyyy.mm.dd'),'Mercedes')",
-			"insert into versenyzok values(1,'Max Verstappen',143,20,to_date('2015.03.15', 'yyyy.mm.dd'),'Red Bull')",
-			"insert into versenyzok values(11,'Sergio Pérez',219,2,to_date('2011.03.27', 'yyyy.mm.dd'),'Red Bull')",
+			"insert into versenyzok values(1,'Max Verstappen',143,20,to_date('2015.03.15', 'yyyy.mm.dd'),'Red_Bull')",
+			"insert into versenyzok values(11,'Sergio Pérez',219,2,to_date('2011.03.27', 'yyyy.mm.dd'),'Red_Bull')",
 			"insert into versenyzok values(16,'Charles Leclerc',83,3,to_date('2018.03.25', 'yyyy.mm.dd'),'Ferrari')",
 			"insert into versenyzok values(55,'Carlos Sainz Jr.',143,0,to_date('2015.03.15', 'yyyy.mm.dd'),'Ferrari')",
 			"insert into versenyzok values(3,'Daniel Ricciardo',212,8,to_date('2011.07.11', 'yyyy.mm.dd'),'McLaren')",
 			"insert into versenyzok values(4,'Lando Norris',62,0,to_date('2019.03.17', 'yyyy.mm.dd'),'McLaren')",
 			"insert into versenyzok values(14,'Fernando Alonso',338,32,to_date('2001.03.04', 'yyyy.mm.dd'),'Alpine')",
 			"insert into versenyzok values(31,'Esteban Ocon',91,1,to_date('2016.08.28', 'yyyy.mm.dd'),'Alpine')",
-			"insert into versenyzok values(10,'Pierre Gasly',88,1,to_date('2017.10.01', 'yyyy.mm.dd'),'AlphaTauri')",
-			"insert into versenyzok values(22,'Cunoda Júki',24,0,to_date('2021.03.28', 'yyyy.mm.dd'),'AlphaTauri')",
-			"insert into versenyzok values(5,'Sebastian Vettel',280,53,to_date('2007.06.17', 'yyyy.mm.dd'),'Aston Martin')",
-			"insert into versenyzok values(18,'Lance Stroll',103,0,to_date('2017.03.27', 'yyyy.mm.dd'),'Aston Martin')",
+			"insert into versenyzok values(10,'Pierre Gasly',88,1,to_date('2017.10.01', 'yyyy.mm.dd'),'Alpha_Tauri')",
+			"insert into versenyzok values(22,'Cunoda Júki',24,0,to_date('2021.03.28', 'yyyy.mm.dd'),'Alpha_Tauri')",
+			"insert into versenyzok values(5,'Sebastian Vettel',280,53,to_date('2007.06.17', 'yyyy.mm.dd'),'Aston_Martin')",
+			"insert into versenyzok values(18,'Lance Stroll',103,0,to_date('2017.03.27', 'yyyy.mm.dd'),'Aston_Martin')",
 			"insert into versenyzok values(6,'Nicholas Latifi',41,0,to_date('2020.07.05', 'yyyy.mm.dd'),'Williams')",
 			"insert into versenyzok values(23,'Alexander Albon',40,0,to_date('2019.03.19', 'yyyy.mm.dd'),'Williams')",
-			"insert into versenyzok values(24,'Csou Kuan-jü',2,0,to_date('2022.03.20', 'yyyy.mm.dd'),'Alfa Romeo')",
-			"insert into versenyzok values(77,'Valtteri Bottas',181,10,to_date('2013.03.17', 'yyyy.mm.dd'),'Alfa Romeo')",
+			"insert into versenyzok values(24,'Csou Kuan-jü',2,0,to_date('2022.03.20', 'yyyy.mm.dd'),'Alfa_Romeo')",
+			"insert into versenyzok values(77,'Valtteri Bottas',181,10,to_date('2013.03.17', 'yyyy.mm.dd'),'Alfa_Romeo')",
 			"insert into versenyzok values(47,'Mick Schumacher',24,0,to_date('2021.03.28', 'yyyy.mm.dd'),'Haas')",
 			"insert into versenyzok values(20,'Kevin Magnussen',122,0,to_date('2014.03.16', 'yyyy.mm.dd'),'Haas')",
 
@@ -412,10 +415,11 @@ public class JDBC_program {
 				
 				}
 				rs.close();
+				Menu();
 			}catch(Exception ex) {
 				System.out.println(ex.getMessage());
 			}
-		}Menu();}	
+		}}	
 		
 		if(tabla.equals("palyak")) {
 			System.out.println("Adja meg melyik mezőt szeretné lekérdezni: (id, helyszin, orszag, futamnapja, palyahossz");
@@ -440,10 +444,11 @@ public class JDBC_program {
 						System.out.println("Adatok: "+nev);}
 					}
 					rs.close();
+					Menu();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
 				}
-			}Menu();}	
+			}}	
 		
 		if(tabla.equals("csapat")) {
 			System.out.println("Adja meg melyik mezőt szeretné lekérdezni: (csapatnev, futamokszama, gyozelmek, podiumok, bajnoksagok vagy debutalas");
@@ -471,10 +476,11 @@ public class JDBC_program {
 						System.out.println("Adatok: "+nev);}
 					}
 					rs.close();
+					Menu();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
 				}
-			}Menu();}	
+			}}	
 	}
 	
 	
@@ -495,11 +501,12 @@ public class JDBC_program {
 				ps.executeUpdate();
 				ps.close();
 				System.out.println(rajtszam + " rajtszámú pilóta törölve\n");
+				Menu();
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
 				DinamikusAdattorles();
 			}
-		}Menu();}
+		}}
 		
 		if(torles.equals("palyak")) {
 			System.out.println("Melyik pályát töröljük az adatbázisból?: (Alap esetben az azonosítók száma: 1-22 ");
@@ -513,11 +520,12 @@ public class JDBC_program {
 					ps.executeUpdate();
 					ps.close();
 					System.out.println(id + " azonosítójú pálya törölve\n");
+					Menu();
 				} catch (Exception ex) {
 					System.err.println(ex.getMessage());
 					DinamikusAdattorles();
 				}
-			}Menu();}
+			}}
 		
 		if(torles.equals("csapat")) {
 			System.out.println("Melyik csapatot töröljük az adatbázisból? (A csapat kitörlése a versenyzők táblára is hatni fog) : ");
@@ -532,15 +540,18 @@ public class JDBC_program {
 					ps.executeUpdate();*/
 					
 					s=conn.createStatement();
-						s.executeUpdate(sqlp2);
-						s.executeUpdate(sqlp1);
+					s.executeUpdate(sqlp1);
+					s.executeUpdate(sqlp2);
+					
 					ps.close();
 					System.out.println(csapatnev + " nevű csapat törölve\n");
+					Menu();
 				} catch (Exception ex) {
 					System.err.println(ex.getMessage());
-					DinamikusAdattorles();
+				//	DinamikusAdattorles();
+					Menu();
 				}
-			}Menu();}
+			}}
 	}
 	
 	
@@ -570,9 +581,10 @@ public class JDBC_program {
 							System.out.println(rajtszam+"        "+nev+"  "+csapatnev+"     "+futamok+"            "+gyozelmek+"        "+debutalas);
 					}
 					rs.close();
+					Menu();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
-				}Menu();
+				}
 			}
 		}else if(tabla.equals("palyak")) {
 			if(conn != null) {
@@ -592,9 +604,10 @@ public class JDBC_program {
 							System.out.println(id+" "+helyszin+" "+orszag+" "+futamNapja+"       "+palyahossz);
 					}
 					rs.close();
+					Menu();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
-				}Menu();
+				}
 			}
 		}else if(tabla.equals("csapat")){
 			if(conn != null) {
@@ -616,10 +629,11 @@ public class JDBC_program {
 							System.out.println(csapatNev+"      "+futamokSzama+"             "+gyozelmek+"       "+podiumok+"   "+bajnoksagok+ "   "+debutalas);
 					}
 					rs.close();
+					Menu();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
 				}
-			}Menu();
+			}
 		}else {
 			System.out.println("Nem megfelelő táblát adott meg. Kérem próbálja újra");
 			StatikusLekerdezes();
@@ -642,12 +656,13 @@ public class JDBC_program {
 					rs.updateInt(adat, (regiadatok*2));
 					rs.updateRow();
 					System.out.printf("Az futamok száma a módosítás után: %d \n",regiadatok*2);
-				}
+					
+				}Menu();
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
 				ModosithatoKurzor();
 			}
-		}Menu();
+		}
 	}
 	
 
@@ -689,10 +704,11 @@ public class JDBC_program {
 							System.out.println(rajtszam+"        "+nev+"  "+csapatnev+"     "+futamok+"            "+gyozelmek+"        "+debutalas);
 					}
 					rs.close();
+					Menu();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
 					DinamikusAdatlekerdezes2();
-				}Menu();
+				}
 			}
 		}else if(tabla.equals("palyak")) {
 			System.out.println("Add meg a pálya azonsítóját");
@@ -714,10 +730,11 @@ public class JDBC_program {
 							System.out.println(id+" "+helyszin+" "+orszag+" "+futamNapja+"       "+palyahossz);
 					}
 					rs.close();
+					Menu();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
 					DinamikusAdatlekerdezes2();
-				}Menu();
+				}
 			}
 		}else if(tabla.equals("csapat")){
 			System.out.println("Add meg a csapat nevét");
@@ -740,12 +757,13 @@ public class JDBC_program {
 							
 							System.out.println(csapatNev+"      "+futamokSzama+"             "+gyozelmek+"       "+podiumok+"   "+bajnoksagok+ "   "+debutalas);
 					}
+					Menu();
 					rs.close();
 				}catch(Exception ex) {
 					System.out.println(ex.getMessage());
 					DinamikusAdatlekerdezes2();
 				}
-			}Menu();
+			}
 		}else {
 			System.out.println("Nem megfelelő táblát adott meg. Kérem próbálja újra");
 			DinamikusAdatlekerdezes2();
