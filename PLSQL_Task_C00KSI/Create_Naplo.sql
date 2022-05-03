@@ -1,0 +1,1 @@
+create table Naplo(Esemeny varchar(20), Adat varchar(100), Datum timestamp);
