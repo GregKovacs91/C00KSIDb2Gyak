@@ -1,6 +1,12 @@
-DBMS_JOB.SUBMIT(
-jobno OUT binary_integer,
-what IN varchar2,
-next_date IN date default sysdate,
-interval IN varchar2 default 'null',
-no_parse IN boolean default false);
+create or replace procedure VDbKiir is
+cursor cur is select * from vasarlas;
+cv cur%rowtype;
+begin
+open cur;
+loop
+fetch cur into cv;
+exit when cur%notfound;
+end loop;
+dbms_output.put_line(cur%rowcount);
+close cur;
+end;
