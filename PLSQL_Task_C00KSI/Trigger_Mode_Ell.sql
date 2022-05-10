@@ -1,0 +1,1 @@
+update versenyzok set rajtszam = 101 where rajtszam=44;

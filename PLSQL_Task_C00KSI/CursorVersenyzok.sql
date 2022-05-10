@@ -6,7 +6,7 @@ open cur;
 loop 
 fetch cur into cv; 
 exit when cur%notfound; 
-dbms_output.put_line('Rajtszam: ' || cv.rajtszam || ' Név: ' || cv.mennyiseg || ' Futamok száma: ' || cv.futamok || ' Gy?zelmek: ' || cv.gyozelmek || ' Debütálás: ' || cv.debutalas); 
+dbms_output.put_line('Rajtszam: ' || cv.rajtszam || ' Név: ' || cv.nev || ' Futamok száma: ' || cv.futamok || ' Gyozelmek: ' || cv.gyozelmek || ' Debütálás: ' || cv.debutalas); 
 end loop; 
 close cur; 
 return listV; 

@@ -1,0 +1,1 @@
+select gyoztesversenyzok from dual
